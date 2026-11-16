@@ -1,0 +1,15 @@
+---
+- name: Создать директорию и файл на виртуалке
+  hosts: vm
+  become: false
+  tasks:
+    - name: Создать директорию /tmp/ansible_test
+      file:
+        path: /tmp/ansible_test
+        state: directory
+        mode: '0755'
+
+    - name: Создать файл hello.txt
+      copy:
+        content: "Привет, Ansible! Это тестовый файл."
+        dest: /tmp/ansible_test/hello.txt

@@ -1,0 +1,50 @@
+---
+- name: netology-ml
+  hosts: all
+  become: true
+
+  vars:
+    packages:
+      - net-tools
+      - git
+      - tree
+      - htop
+      - mc
+      - vim
+    user_groups:
+      - devops_1
+      - test_1
+
+  tasks:
+    - name: Проверка доступности хостов
+      ansible.builtin.ping:
+
+    - name: Обновление кэша пакетов (update)
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Установка пакетов из переменной
+      ansible.builtin.apt:
+        name: "{{ packages }}"
+        state: present
+
+    - name: Копирование текстового файла test.txt
+      ansible.builtin.copy:
+        src: test.txt
+        dest: /tmp/test.txt
+        mode: "0644"
+
+    - name: Создание групп в цикле
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ user_groups }}"
+
+    - name: Создание пользователей и их домашних директорий
+      ansible.builtin.user:
+        name: "{{ item }}"
+        group: "{{ item }}"
+        home: "/home/{{ item }}"
+        create_home: true
+        shell: /bin/bash
+      loop: "{{ user_groups }}"
